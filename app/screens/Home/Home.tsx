@@ -118,6 +118,8 @@ export const Home = ({ navigation }: HomeScreenProps) => {
     // const wishList = useSelector((state:any) => state.wishList.wishList);
     // console.log(wishList);
 
+    const userDetail = useSelector((state:any) => state.auth.userDetail);
+
     const dispatch = useDispatch();
 
     const theme = useTheme();
@@ -134,7 +136,7 @@ export const Home = ({ navigation }: HomeScreenProps) => {
                     <View style={[GlobalStyleSheet.flex]}>
                         <View>
                             <Text style={{ ...FONTS.fontRegular, fontSize: 14, color: colors.title }}>Good Morning</Text>
-                            <Text style={{ ...FONTS.fontSemiBold, fontSize: 24, color: colors.title }}>Williams</Text>
+                            <Text style={{ ...FONTS.fontSemiBold, fontSize: 24, color: colors.title }}>{userDetail.full_name}</Text>
                         </View>
                         <View style={{flexDirection:'row',alignItems:'center'}}>
                             <TouchableOpacity

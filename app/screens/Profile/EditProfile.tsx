@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text,  ScrollView, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native'
 import { useNavigation, useTheme } from '@react-navigation/native';
 import Header from '../../layout/Header';
@@ -8,13 +8,32 @@ import Input from '../../components/Input/Input';
 import ImagePicker from 'react-native-image-crop-picker';
 import Button from '../../components/Button/Button';
 import { COLORS, FONTS } from '../../constants/theme';
+import { put } from '../../config/apiCall';
+import { Endpoints } from '../../config/endpoints';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetail } from '../../services/commonService';
+import { setUserDetail } from '../../redux/reducer/authReducer';
+import useLogout from '../../customHooks/useLogout';
 
 const EditProfile = () => {
+
+    const dispatch = useDispatch();
+    const logout = useLogout();
 
     const theme = useTheme();
     const { colors } : {colors : any} = theme;
 
     const navigation = useNavigation<any>();
+
+    const userDetail = useSelector((state:any) => state.auth.userDetail);
+
+    useEffect(() => {
+        setName(userDetail.full_name ? userDetail.full_name : '');
+        setEmail(userDetail.email ? userDetail.email : '');
+    }, [userDetail])
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
 
     const [isFocused, setisFocused] = useState(false)
     const [isFocused1, setisFocused1] = useState(false)
@@ -29,6 +48,26 @@ const EditProfile = () => {
         const numericValue = text.replace(/[^0-9]/g, ""); 
         setInputValue(numericValue); 
     };
+
+    const updateProfile = async () => {
+        put(Endpoints.UPDATE_USER, {name: name, email: email}).then(async (res) => {
+            if(res.data.status == "success"){
+                const detail = await getUserDetail();
+                console.log('detail >>>>', detail);
+                dispatch(setUserDetail(detail));
+                navigation.navigate('Profile')
+                return;
+            }
+        }).catch((err) => {
+            if(err.status === 401){
+                logout();
+            }
+            console.log(err)
+        }).finally(() => {
+
+        })
+    }
+
 
     // const handleImageSelect = () => {
     //     if(Platform.OS == 'android'){
@@ -78,29 +117,30 @@ const EditProfile = () => {
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <Text style={[FONTS.fontMedium,{fontSize:19,color:colors.title}]}>James Smith</Text>
-                            <Text style={[FONTS.fontRegular,{fontSize:12,color:colors.text}]}>Last Visit : 17 Jan 2024</Text>
+                            <Text style={[FONTS.fontMedium,{fontSize:19,color:colors.title}]}>{userDetail.full_name}</Text>
+                            {/* <Text style={[FONTS.fontRegular,{fontSize:12,color:colors.text}]}>Last Visit : 17 Jan 2024</Text> */}
                         </View>
                     </View>
                 </View>
                 <View style={[GlobalStyleSheet.container,{backgroundColor:theme.dark ? 'rgba(255,255,255,.1)':colors.card,marginTop:10,paddingVertical:10,borderRadius:15}]}>
-                    <View style={[styles.cardBackground,{ borderBottomColor:COLORS.inputborder,borderStyle:'dashed'}]}>
+                    {/* <View style={[styles.cardBackground,{ borderBottomColor:COLORS.inputborder,borderStyle:'dashed'}]}>
                         <Text style={{ ...FONTS.fontRegular, fontSize: 14, color: colors.title }}>Overall Rating</Text>
-                    </View>
+                    </View> */}
                     <View style={{ marginBottom: 15, marginTop: 10 }}>
                         <Input  
                             onFocus={() => setisFocused(true)}
                             onBlur={() => setisFocused(false)}
                             isFocused={isFocused}
-                            onChangeText={(value) => console.log(value)}
+                            onChangeText={(value) => setName(value)}
                             backround={colors.card}
                             style={{borderRadius:48}}
                             inputicon
                             placeholder='Full Name'
                             icon={<Image source={IMAGES.user2} style={[styles.icon,{tintColor:colors.title}]}/>}
+                            value={name}
                         />
                     </View>
-                    <View style={{ marginBottom: 15 }}>
+                    {/* <View style={{ marginBottom: 15 }}>
                         <Input  
                             onFocus={() => setisFocused1(true)}
                             onBlur={() => setisFocused1(false)}
@@ -114,21 +154,22 @@ const EditProfile = () => {
                             placeholder='Mobile No.'
                             icon={<Image source={IMAGES.Phoneduotone} style={[styles.icon,{tintColor:colors.title}]}/>}
                         />
-                    </View>
+                    </View> */}
                     <View style={{ marginBottom: 15 }}>
                         <Input  
                             onFocus={() => setisFocused2(true)}
                             onBlur={() => setisFocused2(false)}
                             isFocused={isFocused2}
-                            onChangeText={(value) => console.log(value)}
+                            onChangeText={(value) => setEmail(value)}
                             backround={colors.card}
                             style={{borderRadius:48}}
                             inputicon
                             placeholder='Email Address '
                             icon={<Image source={IMAGES.email2} style={[styles.icon,{tintColor:colors.title}]}/>}
+                            value={email}
                         />
                     </View>
-                    <View style={{ marginBottom: 15 }}>
+                    {/* <View style={{ marginBottom: 15 }}>
                         <Input  
                             onFocus={() => setisFocused3(true)}
                             onBlur={() => setisFocused3(false)}
@@ -140,7 +181,7 @@ const EditProfile = () => {
                             placeholder='Location'
                             icon={<Image source={IMAGES.Pinduotone} style={[styles.icon,{tintColor:colors.title}]}/>}
                         />
-                    </View>
+                    </View> */}
                 </View>
             </ScrollView>
             <View style={[GlobalStyleSheet.container]}>
@@ -148,7 +189,7 @@ const EditProfile = () => {
                     title='Update Profile'
                     color={COLORS.primary}
                     text={ COLORS.card}
-                    onPress={() => navigation.navigate('Profile')}
+                    onPress={updateProfile}
                     style={{borderRadius:50}}
                 />
             </View> 

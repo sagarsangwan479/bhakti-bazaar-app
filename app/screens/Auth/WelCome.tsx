@@ -43,7 +43,7 @@ const WelCome = ({navigation} : WelComeScreenProps) => {
                                 rounded
                                 icon={<FontAwesome name='envelope' size={22} color={COLORS.card}/>}
                                 border={COLORS.primary}
-                                onpress={() => navigation.navigate('SingIn')}
+                                onpress={() => navigation.navigate('SignIn')}
                             />
                         </View>
                         {/* <View style={{marginBottom:10}}>
@@ -54,7 +54,7 @@ const WelCome = ({navigation} : WelComeScreenProps) => {
                                 rounded
                                 icon={<FontAwesome name='envelope' size={22} color={COLORS.card}/>}
                                 border={COLORS.primary}
-                                onpress={() => navigation.navigate('SingIn')}
+                                onpress={() => navigation.navigate('SignIn')}
                             />
                         </View> */}
                         {/* <View style={{marginBottom:10}}>

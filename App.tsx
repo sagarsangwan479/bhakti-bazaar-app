@@ -5,7 +5,8 @@ import { useTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux'
-import store from './app/redux/store';
+import store, { persister } from './app/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 export default function App() {
   
@@ -35,7 +36,9 @@ export default function App() {
           }}>
             <StatusBar style="dark" />
             <Provider store={store}>
-              <Route/>
+              <PersistGate loading={null} persistor={persister}>
+                <Route/>
+              </PersistGate>
             </Provider>
         </SafeAreaView>
     </SafeAreaProvider>

@@ -7,7 +7,7 @@ import { RootStackParamList } from '../../navigation/RootStackParamList';
 import { COLORS,FONTS, SIZES } from '../../constants/theme';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import Button from '../../components/Button/Button';
-
+import { useSelector } from 'react-redux';
 
 const DATA = [
     {
@@ -27,6 +27,8 @@ const DATA = [
 type OnboardingScreenProps = StackScreenProps<RootStackParamList, 'Onboarding'>;
 
 const Onboarding = ({navigation} : OnboardingScreenProps) => {
+
+    const userDetail = useSelector((state:any) => state.auth.userDetail);
 
     const theme = useTheme();
     const {colors}:{colors : any} = theme;
@@ -69,6 +71,13 @@ const Onboarding = ({navigation} : OnboardingScreenProps) => {
             }),
         ]).start();
     }, [sliderIndex]);
+
+    useEffect(() => {
+        if(userDetail && Object.keys(userDetail).length){
+            navigation.navigate('DrawerNavigation', {screen : 'Home'});
+            return;
+        }
+    },[])
     
   return (
     <SafeAreaView style={{flex:1,backgroundColor: colors.card}}>

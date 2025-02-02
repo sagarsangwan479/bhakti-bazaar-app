@@ -71,7 +71,7 @@ const ForgotPassword = ({navigation} :ForgotPasswordScreenProps) => {
             />
            <View style={[GlobalStyleSheet.bottombtn]}>
                 <Text style={[FONTS.fontRegular,{fontSize:14,color:colors.title}]}>Back To</Text>
-                <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('SingIn')}>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('SignIn')}>
                     <Text style={styles.title4}>Sign In</Text>
                 </TouchableOpacity>
             </View>

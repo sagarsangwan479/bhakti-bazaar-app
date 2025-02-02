@@ -1,5 +1,5 @@
 import { useTheme } from '@react-navigation/native';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text ,TouchableOpacity,Image,ScrollView, StyleSheet} from 'react-native'
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
 import { IMAGES } from '../../constants/Images';
@@ -7,28 +7,36 @@ import { COLORS,FONTS } from '../../constants/theme';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootStackParamList';
 import Header from '../../layout/Header';
+import { useSelector } from 'react-redux';
+
+interface profileDataInterface {
+    id: string,
+    image: any,
+    title: string,
+    subtitle: string
+}
 
 
-const profileData = [
-    {
-        id:"1",
-        image:IMAGES.call,
-        title:'Mobile Phone',
-        subtitle:"+12 345 678 92"
-    },
-    {
-        id:"2",
-        image:IMAGES.email,
-        title:'Email Address',
-        subtitle:"example@gmail.com"
-    },
-    {
-        id:"3",
-        image:IMAGES.map,
-        title:'Address',
-        subtitle:"Franklin Avenue, Corner St. \nLondon, 24125151"
-    },
-]
+// const profileData = [
+//     {
+//         id:"1",
+//         image:IMAGES.call,
+//         title:'Mobile Phone',
+//         subtitle:"+12 345 678 92"
+//     },
+//     {
+//         id:"2",
+//         image:IMAGES.email,
+//         title:'Email Address',
+//         subtitle:"example@gmail.com"
+//     },
+//     {
+//         id:"3",
+//         image:IMAGES.map,
+//         title:'Address',
+//         subtitle:"Franklin Avenue, Corner St. \nLondon, 24125151"
+//     },
+// ]
 
 const profilecartData = [
     {
@@ -51,6 +59,42 @@ type ProfileScreenProps = StackScreenProps<RootStackParamList, 'Profile'>;
 
 const Profile = ({navigation} : ProfileScreenProps) => {
 
+  const [profileData, setProfileData] = useState<profileDataInterface[]>([]); 
+
+  const userDetail = useSelector((state:any) => state.auth.userDetail);
+
+  useEffect(() => {
+    let objects = [];
+
+    const ob1 = {
+        id:"1",
+        image: IMAGES.call,
+        title: 'Mobile Phone',
+        subtitle: userDetail.phone_number
+    }
+
+    const ob2 = {
+        id:"2",
+        image: IMAGES.email,
+        title: 'Email Address',
+        subtitle: userDetail.email
+    }
+
+    const ob3 = {
+        id:"3",
+        image: IMAGES.map,
+        title: 'Address',
+        subtitle: `${userDetail.address}, ${userDetail.city}, ${userDetail.state}, ${userDetail.pincode}`
+    }
+
+    objects.push(ob1);
+    objects.push(ob2);
+    objects.push(ob3);
+
+    setProfileData(objects);
+    
+  }, [userDetail]);
+
   const theme = useTheme();
   const { colors } : {colors : any} = theme;
   return (
@@ -70,8 +114,8 @@ const Profile = ({navigation} : ProfileScreenProps) => {
                         source={IMAGES.small6}
                     />
                 </View>
-                <Text style={{...FONTS.fontSemiBold,fontSize:28,color:colors.title}}>William Smith</Text>
-                <Text style={{...FONTS.fontRegular,fontSize:16,color:COLORS.primary}}>London, England</Text>
+                <Text style={{...FONTS.fontSemiBold,fontSize:28,color:colors.title}}>{userDetail.full_name}</Text>
+                <Text style={{...FONTS.fontRegular,fontSize:16,color:COLORS.primary}}>{userDetail.city}, {userDetail.state}</Text>
             </View>
             <View 
                 style={[GlobalStyleSheet.container,{paddingHorizontal:40,marginTop:20}]}
@@ -100,7 +144,7 @@ const Profile = ({navigation} : ProfileScreenProps) => {
                     })}
                 </View>
             </View>
-            <View style={[GlobalStyleSheet.container,{padding:0}]}>
+            {/* <View style={[GlobalStyleSheet.container,{padding:0}]}>
                 <View style={[GlobalStyleSheet.flex,{paddingHorizontal:30}]}>
                     <Text style={[styles.brandsubtitle3,{fontSize: 18,color:colors.title}]}>Most Ordered</Text>
                 </View>
@@ -143,7 +187,7 @@ const Profile = ({navigation} : ProfileScreenProps) => {
                             </View>
                         </ScrollView>
                     </View>
-            </View>
+            </View> */}
         </ScrollView>
     </View>
   )

@@ -81,12 +81,12 @@ const NewPassword = ({navigation} : NewPasswordScreenProps) => {
                 <View style={[GlobalStyleSheet.container,{paddingTop:0,paddingHorizontal:0}]}>
                     <Button
                         title={"Continue"}
-                        onPress={() => navigation.navigate('SingIn')}
+                        onPress={() => navigation.navigate('SignIn')}
                         style={{borderRadius:48}}
                     />
                     <View style={[GlobalStyleSheet.bottombtn]}>
                         <Text style={[FONTS.fontRegular,{fontSize:14,color:colors.title}]}>Back To</Text>
-                        <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('SingIn')}>
+                        <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('SignIn')}>
                             <Text style={styles.title4}>Sign In</Text>
                         </TouchableOpacity>
                     </View>
