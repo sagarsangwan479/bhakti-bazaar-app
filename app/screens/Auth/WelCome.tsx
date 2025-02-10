@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootStackParamList';
 import { useTheme } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet } from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
+import { useSelector } from 'react-redux';
 
 type WelComeScreenProps = StackScreenProps<RootStackParamList, 'WelCome'>;
 
@@ -18,6 +19,15 @@ const WelCome = ({navigation} : WelComeScreenProps) => {
 
     const theme = useTheme();
     const {colors}:{colors : any} = theme;
+
+    const userDetail = useSelector((state:any) => state.auth.userDetail);
+
+    useEffect(() => {
+        if(userDetail && Object.keys(userDetail).length){
+            navigation.navigate('DrawerNavigation', {screen : 'Home'});
+            return;
+        }
+    },[])
 
     return (
         <View style={{flex:1,backgroundColor:colors.card,}}>

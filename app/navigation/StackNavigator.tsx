@@ -67,7 +67,7 @@ const StackNavigator = () => {
     return (
 		<View style={{width : '100%',flex:1}}>
 			<Stack.Navigator
-				initialRouteName='Onboarding'
+				initialRouteName='WelCome'
 				screenOptions={{
 					headerShown:false,
 					cardStyle: { backgroundColor: "transparent" },

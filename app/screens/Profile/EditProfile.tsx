@@ -53,7 +53,6 @@ const EditProfile = () => {
         put(Endpoints.UPDATE_USER, {name: name, email: email}).then(async (res) => {
             if(res.data.status == "success"){
                 const detail = await getUserDetail();
-                console.log('detail >>>>', detail);
                 dispatch(setUserDetail(detail));
                 navigation.navigate('Profile')
                 return;
@@ -63,8 +62,6 @@ const EditProfile = () => {
                 logout();
             }
             console.log(err)
-        }).finally(() => {
-
         })
     }
 
