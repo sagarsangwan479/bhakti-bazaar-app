@@ -19,6 +19,7 @@ type Props = {
     Myorder ?: any;
     completed ?: any;
     countnumber ?: string;
+    originalPrice ?: string;
     onPress ?: (e : any) => void,
     onPress2 ?: any,
     onPress3 ?: (e : any) => void,
@@ -26,7 +27,7 @@ type Props = {
     onPress5 ?: (e : any) => void,
 }
 
-const Cardstyle4 = ({id,title,image,countnumber,price,onPress,brand,product,onPress2,Myorder,btntitle,completed,onPress5,onPress3,onPress4} : Props) => {
+const Cardstyle4 = ({id,title,image,countnumber,originalPrice,price,onPress,brand,product,onPress2,Myorder,btntitle,completed,onPress5,onPress3,onPress4} : Props) => {
 
     const theme = useTheme();
     const { colors } : {colors : any} = theme;
@@ -163,7 +164,10 @@ const Cardstyle4 = ({id,title,image,countnumber,price,onPress,brand,product,onPr
                             <Text style={{...FONTS.fontMedium,fontSize:14,color:COLORS.card,lineHeight:21}}>{btntitle}</Text>
                         </TouchableOpacity>
                         :
-                        <Text style={{...FONTS.fontMedium,fontSize:18,color:COLORS.primary}}>{countnumber}</Text>
+                        <View>
+                            <Text style={{...FONTS.fontMedium,fontSize:18,color:COLORS.primary}}>{countnumber}</Text>
+                            <Text style={{...FONTS.fontMedium,fontSize:16,color:'#6CAE97',textDecorationLine:'line-through'}}>{originalPrice}</Text>
+                        </View>
                     }
                 </View>
                 {Myorder ?

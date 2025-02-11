@@ -8,14 +8,20 @@ import Input from '../../components/Input/Input';
 import ImagePicker from 'react-native-image-crop-picker';
 import Button from '../../components/Button/Button';
 import { COLORS, FONTS } from '../../constants/theme';
-import { put } from '../../config/apiCall';
 import { Endpoints } from '../../config/endpoints';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetail } from '../../services/commonService';
 import { setUserDetail } from '../../redux/reducer/authReducer';
 import useLogout from '../../customHooks/useLogout';
+import { useApi } from '../../services/api/apiClient';
 
 const EditProfile = () => {
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+
+    const { data: updateProfileResponse, error: updateProfileError, loading: updateProfileLoading, refetch: updateProfile } = useApi(Endpoints.UPDATE_USER, false, { method: 'PUT', data: {name: name, email: email} });
+
+    const { data: getUserResponse, error: getUserError, loading: getUserLoading, refetch: getUserDetail } = useApi(Endpoints.GET_USER);
 
     const dispatch = useDispatch();
     const logout = useLogout();
@@ -32,9 +38,6 @@ const EditProfile = () => {
         setEmail(userDetail.email ? userDetail.email : '');
     }, [userDetail])
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-
     const [isFocused, setisFocused] = useState(false)
     const [isFocused1, setisFocused1] = useState(false)
     const [isFocused2, setisFocused2] = useState(false)
@@ -48,22 +51,6 @@ const EditProfile = () => {
         const numericValue = text.replace(/[^0-9]/g, ""); 
         setInputValue(numericValue); 
     };
-
-    const updateProfile = async () => {
-        put(Endpoints.UPDATE_USER, {name: name, email: email}).then(async (res) => {
-            if(res.data.status == "success"){
-                const detail = await getUserDetail();
-                dispatch(setUserDetail(detail));
-                navigation.navigate('Profile')
-                return;
-            }
-        }).catch((err) => {
-            if(err.status === 401){
-                logout();
-            }
-            console.log(err)
-        })
-    }
 
 
     // const handleImageSelect = () => {
@@ -82,6 +69,19 @@ const EditProfile = () => {
             
     //     }
     // }
+
+    useEffect(() => {
+        if(updateProfileResponse && !updateProfileError && !updateProfileLoading && updateProfileResponse.status === 'success'){
+            getUserDetail();
+        }
+    }, [updateProfileResponse])
+
+    useEffect(() => {
+        if(getUserResponse && !getUserError && !getUserLoading && getUserResponse.status === 'success'){
+            dispatch(setUserDetail(getUserResponse.data));
+            navigation.navigate('Profile');
+        }
+    }, [getUserResponse])
 
     return (
        <View style={{backgroundColor:colors.background,flex:1}}>

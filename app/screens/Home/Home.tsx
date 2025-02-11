@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { GlobalStyleSheet } from '../../constants/StyleSheet';
@@ -12,6 +12,9 @@ import { addTowishList } from '../../redux/reducer/wishListReducer';
 import ImageSwiper from '../../components/ImageSwiper';
 import Cardstyle4 from '../../components/Card/Cardstyle4';
 import { openDrawer } from '../../redux/actions/drawerAction';
+import { useApi } from '../../services/api/apiClient';
+import { Endpoints } from '../../config/endpoints';
+import { setCategoriesList, setHomeFamousProductsList, setHomeTrendingProductsList } from '../../redux/reducer/productReducer';
 
 
 const ArrivalData = [
@@ -115,10 +118,21 @@ type HomeScreenProps = StackScreenProps<RootStackParamList, 'Home'>
 
 export const Home = ({ navigation }: HomeScreenProps) => {
 
+    const userDetail = useSelector((state:any) => state.auth.userDetail);
+    const categoriesList = useSelector((state: any) => state.product.categories);
+    const lastUpdatedCategories = useSelector((state: any) => state.product.categoriesLastUpdated);
+    const famousProducts = useSelector((state: any) => state.product.homeFamousProducts);
+    const lastUpdatedFamousProducts = useSelector((state: any) => state.product.homeFamousProductsLastUpdated);
+    const trendingProducts = useSelector((state: any) => state.product.homeTrendingProducts);
+    const lastUpdatedTrendingProducts = useSelector((state: any) => state.product.homeTrendingProductsListLastUpdated);
+
+    const { data, error, loading, refetch } = useApi(Endpoints.GET_CATEGORIES, !categoriesList.length && !lastUpdatedCategories ? true : false);
+
+    const { data: famousAndTrendingProductsData, error: famousAndTrendingProductsError, loading: famousAndTrendingProductsLoading, refetch: famousAndTrendingProductsRefetch } = useApi(Endpoints.GET_PRODUCTS, ((!famousProducts.length && !lastUpdatedFamousProducts) || (!trendingProducts.length && !lastUpdatedTrendingProducts)) ? true : false, { data: { is_famous_check: 1 } });
+
     // const wishList = useSelector((state:any) => state.wishList.wishList);
     // console.log(wishList);
 
-    const userDetail = useSelector((state:any) => state.auth.userDetail);
 
     const dispatch = useDispatch();
 
@@ -128,6 +142,23 @@ export const Home = ({ navigation }: HomeScreenProps) => {
     const addItemToWishList = (data: any) => {
         dispatch(addTowishList(data));
     }
+
+    useEffect(() => {
+        if(data && data.length && !error && !loading && !lastUpdatedCategories && !categoriesList.length) {
+            dispatch(setCategoriesList(data));
+        }
+
+        if(famousAndTrendingProductsData && famousAndTrendingProductsData.length && !famousAndTrendingProductsError && !famousAndTrendingProductsLoading && ((!lastUpdatedFamousProducts && !famousProducts.length) || (!lastUpdatedTrendingProducts && !trendingProducts.length))) {
+
+            dispatch(setHomeFamousProductsList(famousAndTrendingProductsData.filter((item: any, index: number) => {
+                    return item.is_famous === 1;
+            })));
+
+            dispatch(setHomeTrendingProductsList(famousAndTrendingProductsData.filter((item: any, index: number) => {
+                return item.is_trending === 1;
+            })));
+        }
+    }, [data, famousAndTrendingProductsData]);
     
     return (
         <View style={{ backgroundColor: colors.card, flex: 1 }}>
@@ -193,7 +224,7 @@ export const Home = ({ navigation }: HomeScreenProps) => {
                 <View style={{alignItems:'center'}}>
                     <View style={[GlobalStyleSheet.container,{padding:0,}]}>
                         <ImageSwiper
-                            data={SwiperData}
+                            data={famousProducts}
                         />
                     </View>
                 </View>
@@ -208,7 +239,7 @@ export const Home = ({ navigation }: HomeScreenProps) => {
                             contentContainerStyle={{ paddingHorizontal: 30 }}
                         >
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginRight: 10,marginBottom:20 }}>
-                                {ArrivalData.map((data: any, index) => {
+                                {categoriesList.map((data: any, index: number) => {
                                     return (
                                         <TouchableOpacity
                                             activeOpacity={0.8}
@@ -222,10 +253,10 @@ export const Home = ({ navigation }: HomeScreenProps) => {
                                             <View style={[GlobalStyleSheet.flexcenter,{gap:20,justifyContent:'flex-start'}]}>
                                                 <Image
                                                     style={[GlobalStyleSheet.image3]}
-                                                    source={data.image}
+                                                    source={data.image_url}
                                                 />
                                                 <View>
-                                                    <Text style={{ ...FONTS.fontMedium, fontSize: 16, color:  colors.title }}>{data.title}</Text>
+                                                    <Text style={{ ...FONTS.fontMedium, fontSize: 16, color:  colors.title }}>{data.name}</Text>
                                                     <Text style={{ ...FONTS.fontRegular, fontSize: 14, color:COLORS.primary }}>{data.subtitle}</Text>
                                                 </View>
                                             </View>
@@ -247,15 +278,16 @@ export const Home = ({ navigation }: HomeScreenProps) => {
                     </View>
                 </View>
                 <View style={[GlobalStyleSheet.container,{paddingHorizontal:30}]}>
-                    {CardStyleData.map((data:any, index:any) => {
+                    {trendingProducts.map((data:any, index:any) => {
                         return (
                             <View key={index} style={{marginBottom:40}}>
                                 <Cardstyle4
                                     id={data.id}
-                                    image={data.image}
-                                    price={data.price}
-                                    countnumber={data.countnumber} 
-                                    title={data.title}
+                                    image={data.image_url}
+                                    price={'Rs.' + (data.price - data.discount)}
+                                    // countnumber={data.price} 
+                                    originalPrice={data.price}
+                                    title={data.name}
                                     onPress={() => navigation.navigate('ProductsDetails')}                                        
                                     onPress5={() => addItemToWishList(data)}                                
                                 />

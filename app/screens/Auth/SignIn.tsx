@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { COLORS, FONTS } from '../../constants/theme'
 import { GlobalStyleSheet } from '../../constants/StyleSheet'
 import { useTheme } from '@react-navigation/native'
@@ -8,14 +8,22 @@ import { RootStackParamList } from '../../navigation/RootStackParamList'
 import Input from '../../components/Input/Input'
 import { IMAGES } from '../../constants/Images'
 import Button from '../../components/Button/Button'
-import { sendLoginOtpApi, loginWithOtpApi } from '../../config/apiCall';
 import { useDispatch } from 'react-redux';
-import { setToken, setUserDetail } from '../../redux/reducer/authReducer';
+import { setUserDetail } from '../../redux/reducer/authReducer';
+import { useApi } from '../../services/api/apiClient';
+import { Endpoints } from '../../config/endpoints';
 
 
 type SignInScreenProps = StackScreenProps<RootStackParamList, 'SignIn'>;
 
 const SignIn = ({navigation} : SignInScreenProps) => {
+
+    const [phone , setPhone] = useState('');
+    const [otp, setOtp] = useState('');
+
+    const { data: loginResponseData, error: loginError, loading: loginLoading, refetch: login } = useApi(Endpoints.LOGIN_BY_PHONE, false, { method: 'POST', data: { phone: phone } });
+
+    const { data: submitOtpResponseData, error: submitOtpError, loading: submitOtpLoading, refetch: submitOtp } = useApi(Endpoints.LOGIN_UPDATE_TOKEN, false, { method: 'POST', data: { phone: phone, otp: otp } });
 
     const dispatch = useDispatch();
 
@@ -26,42 +34,20 @@ const SignIn = ({navigation} : SignInScreenProps) => {
     const [isFocused2 , setisFocused2] = useState(false);
     const [loading , setLoading] = useState(false);
 
-    const [phone , setPhone] = useState('');
-    const [otp, setOtp] = useState('');
-
     const [showLogin , setShowLogin] = useState(false);
 
-    const login = () => {
-        setLoading(true);
-        sendLoginOtpApi({phone:phone}).then((res) => {
-            if(res.data.status === 'success'){
-                setShowLogin(true);
-            } else {
-                throw new Error(res.data.message);
-            }
-        }).catch((err) => {
-            console.log(err);
-        }).finally(() => {
-            setLoading(false);
-        })
-    }
+    useEffect(() => {
+        if(loginResponseData?.status === 'success'){
+            setShowLogin(true);
+        }
+    }, [loginResponseData])
 
-    const submitOtp = () => {
-        if(!showLogin) return;
-        setLoading(true);
-        loginWithOtpApi({phone:phone,otp:otp}).then((res) => {
-            if(res.data.status === 'success'){
-                dispatch(setUserDetail(res.data.data.userDetail));
-                navigation.navigate('DrawerNavigation', {screen : 'Home'});
-            } else {
-                throw new Error(res.data.message);
-            }
-        }).catch((err) => {
-            console.log(err);
-        }).finally(() => {
-            setLoading(false);
-        })
-    }
+    useEffect(() => {
+        if(submitOtpResponseData?.status === 'success'){
+            dispatch(setUserDetail(submitOtpResponseData.data.userDetail));
+            navigation.navigate('DrawerNavigation', {screen : 'Home'});
+        }
+    }, [submitOtpResponseData])
 
   return (
     <SafeAreaView style={{flex:1,backgroundColor:colors.card,}}>

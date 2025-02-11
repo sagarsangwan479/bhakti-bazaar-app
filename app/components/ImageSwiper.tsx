@@ -51,7 +51,7 @@ const ImageSwiper = ({ data } : any) => {
             };
           });
           
-          if (!item.image) {
+          if (!item.image_url) {
             return <View style={{ width: SPACER}} key={index} />;
           }
 
@@ -79,15 +79,15 @@ const ImageSwiper = ({ data } : any) => {
                 <View style={{alignItems:'center'}}>
                   <Image
                     style={{ height:210,width:210,resizeMode:'contain',marginTop:-80}}
-                    source={item.image}
+                    source={item.image_url}
                   />
                 </View>
                 <View style={{paddingHorizontal:25}}>
-                  <Text style={{...FONTS.fontSemiBold,fontSize:16,color:COLORS.card,}}>{item.title}</Text>
+                  <Text style={{...FONTS.fontSemiBold,fontSize:16,color:COLORS.card,}}>{item.name}</Text>
                   <View style={{flexDirection:'row',alignItems:'flex-start',gap:5,marginTop:10}}>
-                      <Text style={{...FONTS.fontSemiBold,fontSize:14,color:COLORS.card,}}>$</Text>
-                      <Text style={{...FONTS.fontSemiBold,fontSize:24,color:COLORS.card,lineHeight:32}}>{item.price}</Text>
-                      <Text style={{...FONTS.fontMedium,fontSize:16,color:'#6CAE97',textDecorationLine:'line-through'}}>{item.discount}</Text>
+                      <Text style={{...FONTS.fontSemiBold,fontSize:14,color:COLORS.card,}}>Rs.</Text>
+                      <Text style={{...FONTS.fontSemiBold,fontSize:24,color:COLORS.card,lineHeight:32}}>{item.price - item.discount}</Text>
+                      <Text style={{...FONTS.fontMedium,fontSize:16,color:'#6CAE97',textDecorationLine:'line-through'}}>{item.price}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
