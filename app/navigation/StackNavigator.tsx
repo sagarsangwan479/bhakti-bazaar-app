@@ -55,6 +55,8 @@ import SwipeableScreen from '../screens/Components/Swipeable';
 import Tabs from '../screens/Components/Tabs';
 import Tables from '../screens/Components/Tables';
 import Toggles from '../screens/Components/Toggles';
+import Address from '../screens/Address/Address';
+import AddAddress from '../screens/Address/AddAddress';
 
 
 
@@ -101,6 +103,8 @@ const StackNavigator = () => {
 				 <Stack.Screen name="Singlechat" component={Singlechat} />
 				 <Stack.Screen name="Call" component={Call} /> 
 				 <Stack.Screen name="EditProfile" component={EditProfile} />
+				 <Stack.Screen name="Address" component={Address} />
+				 <Stack.Screen name='AddAddress' component={AddAddress} />
 
 
 				<Stack.Screen name="Components" component={Components} />

@@ -30,6 +30,8 @@ export type RootStackParamList = {
     Verification: undefined;
     Call: undefined;
     EditProfile: undefined;
+    Address: undefined;
+    AddAddress: { onGoBack: (success: boolean) => void };
     Trackorder: undefined;
     Products: undefined;
     Language: undefined;

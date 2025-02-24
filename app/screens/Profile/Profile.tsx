@@ -8,6 +8,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootStackParamList';
 import Header from '../../layout/Header';
 import { useSelector } from 'react-redux';
+import Button from '../../components/Button/Button';
 
 interface profileDataInterface {
     id: string,
@@ -95,6 +96,10 @@ const Profile = ({navigation} : ProfileScreenProps) => {
     
   }, [userDetail]);
 
+  const showSavedAddress = () => {
+    navigation.navigate('Address');
+  }
+
   const theme = useTheme();
   const { colors } : {colors : any} = theme;
   return (
@@ -135,7 +140,7 @@ const Profile = ({navigation} : ProfileScreenProps) => {
                                         source={data.image}
                                     />
                                 </View>
-                                <View>
+                                <View style={{width: '85%'}}>
                                     <Text style={[styles.brandsubtitle2,{color:'#7D7D7D'}]}>{data.title}</Text>
                                     <Text style={{...FONTS.fontMedium,fontSize:16,color:colors.title,marginTop:5}}>{data.subtitle}</Text>
                                 </View>
@@ -189,6 +194,18 @@ const Profile = ({navigation} : ProfileScreenProps) => {
                     </View>
             </View> */}
         </ScrollView>
+        <View style={[GlobalStyleSheet.container,{backgroundColor:theme.dark ? 'rgba(255,255,255,.1)':colors.card,marginTop:10,paddingVertical:10,borderRadius:15}]}>
+
+            <View>
+                <Button
+                    title='Show Saved Addresses'
+                    color={COLORS.white}
+                    text={COLORS.black}
+                    size='sm'
+                    style={{width:'60%', border: '1px solid', borderColor: COLORS.light, borderRadius: 8, marginLeft: 'auto', marginRight: 'auto'}}
+                    onPress={showSavedAddress} />
+            </View>
+        </View>
     </View>
   )
 }

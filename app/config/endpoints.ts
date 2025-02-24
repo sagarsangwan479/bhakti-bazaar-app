@@ -5,4 +5,6 @@ export enum Endpoints {
     UPDATE_USER = '/update_user',
     GET_CATEGORIES = '/get_categories',
     GET_PRODUCTS = '/get_products',
+    GET_ADDRESSES = '/get_addresses',
+    SAVE_ADDRESS = '/save_address'
 }
