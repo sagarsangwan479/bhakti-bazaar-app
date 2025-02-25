@@ -69,7 +69,7 @@ const ModalBox = () => {
                         }}
                     />
                     {activeSheet === "option" ?
-                        <OptionModal close={setModalVisible}/> :
+                        <OptionModal close={setModalVisible} isConfirmed={setModalVisible} title='Are You Confirm?' confirmationText='You want to cancel the order of T-shirt.' /> :
                         activeSheet === "success" ?
                         <SuccessModal/> :
                         activeSheet === "login" ?

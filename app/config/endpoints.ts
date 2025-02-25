@@ -6,5 +6,6 @@ export enum Endpoints {
     GET_CATEGORIES = '/get_categories',
     GET_PRODUCTS = '/get_products',
     GET_ADDRESSES = '/get_addresses',
-    SAVE_ADDRESS = '/save_address'
+    SAVE_ADDRESS = '/save_address',
+    DELETE_ADDRESS = '/delete_address'
 }

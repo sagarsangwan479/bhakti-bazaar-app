@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Header from "../../layout/Header"
 import { useTheme } from "@react-navigation/native";
 import { useApi } from "../../services/api/apiClient";
@@ -10,6 +10,8 @@ import { IMAGES } from "../../constants/Images";
 import Button from "../../components/Button/Button";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/RootStackParamList";
+import DeleteAddressModal from "../../components/Modal/DeleteAddressModal";
+import { Snackbar } from "react-native-paper";
 
 type AddressScreenProps = StackScreenProps<RootStackParamList, 'Address'>;
 
@@ -21,13 +23,22 @@ const Address = ({navigation}: AddressScreenProps) => {
     const { data: addressData, error: addressError, loading: addressLoading, refetch: fetchAddress } = useApi(Endpoints.GET_ADDRESSES, true);
 
     const [addresses, setAddresses] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [snackbarVisible, setSnackBarVisible] = useState(false);
+    const [snackText, setSnackText] = useState("");
+
+    const onDismissSnackBar = () => setSnackBarVisible(false);
+
+    const showSnackbarAlert = (data: {message: string, type: string}) => {
+		setSnackText(data.message);
+		setSnackBarVisible(!snackbarVisible);
+        if(data.type === 'success'){
+            fetchAddress();
+        }
+	};
 
     const addAddress = () => {
         navigation.navigate('AddAddress', { onGoBack: (success: boolean) => { if(success) fetchAddress() } });
-    }
-
-    const deleteAddress = () => {
-
     }
 
     useEffect(() => {
@@ -40,54 +51,93 @@ const Address = ({navigation}: AddressScreenProps) => {
     }, [addressData]);
 
     return (
-        <View style={{backgroundColor:colors.background,flex:1}}>
-            <Header
-                title='Saved Addresses'
-                leftIcon='back'
-                titleRight
-           />
-           <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={{flexGrow:1,paddingBottom:50}}>
-                <View style={[GlobalStyleSheet.container,{paddingHorizontal:40,marginTop:20}]}>
-                    {addresses.map((address: any, index: any) => (
-                        <View
-                            key={index}
-                            style={[GlobalStyleSheet.flexcenter,{width:'100%',gap:20,justifyContent:'flex-start',marginBottom:25,alignItems:'flex-start'}]}
-                        >
-                            <View
-                                style={[styles.cardimg,{backgroundColor:colors.card}]}
-                            >
-                                <Image
-                                    style={[GlobalStyleSheet.image3,{tintColor:COLORS.primary}]}
-                                    source={address.image}
-                                />
-                            </View>
-                            <View style={{width: '85%'}}>
-                                <Text style={[styles.brandsubtitle2,{color:'#7D7D7D'}]}>{'Address ' + (index + 1)}</Text>
-                                <Text style={{...FONTS.fontMedium,fontSize:16,color:colors.title,marginTop:5}}>{address.address + ', ' + address.city + ', ' + address.state + ', ' + address.pincode}</Text>
-                            </View>
-                        </View>
-                    ))}
+        <>
+            <Modal 
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+            >
+                <View style={{
+                    alignItems:'center',
+                    justifyContent:'center',
+                    flex:1,
+                    position:'relative',
+                }}>
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => setModalVisible(false)}
+                        style={{
+                            position:'absolute',
+                            height:'100%',
+                            width:'100%',
+                            backgroundColor:'rgba(0,0,0,.3)',
+                        }}
+                    />
+                    <DeleteAddressModal close={setModalVisible} onAction={showSnackbarAlert} addressData={addresses} />
                 </View>
 
-           </ScrollView>
-            <View style={[GlobalStyleSheet.container, { flexDirection: 'row', justifyContent: 'space-evenly' }]}>
-                <Button
-                    title='Add Address'
-                    color={COLORS.white}
-                    text={COLORS.primary}
-                    size='lg'
-                    style={{flex: 1, border: '1px solid', borderColor: COLORS.light, borderRadius: 8}}
-                    onPress={addAddress} />
-                        
-                <Button
-                    title='Delete Address'
-                    color={COLORS.danger}
-                    text={COLORS.white}
-                    size='lg'
-                    style={{flex: 1, border: '1px solid', borderColor: COLORS.light, borderRadius: 8}}
-                    onPress={deleteAddress} />
+            </Modal>
+            
+            <View style={{backgroundColor:colors.background,flex:1}}>
+                <Header
+                    title='Saved Addresses'
+                    leftIcon='back'
+                    titleRight
+            />
+            <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={{flexGrow:1,paddingBottom:50}}>
+                    <View style={[GlobalStyleSheet.container,{paddingHorizontal:40,marginTop:20}]}>
+                        {addresses.map((address: any, index: any) => (
+                            <View
+                                key={index}
+                                style={[GlobalStyleSheet.flexcenter,{width:'100%',gap:20,justifyContent:'flex-start',marginBottom:25,alignItems:'flex-start'}]}
+                            >
+                                <View
+                                    style={[styles.cardimg,{backgroundColor:colors.card}]}
+                                >
+                                    <Image
+                                        style={[GlobalStyleSheet.image3,{tintColor:COLORS.primary}]}
+                                        source={address.image}
+                                    />
+                                </View>
+                                <View style={{width: '85%'}}>
+                                    <Text style={[styles.brandsubtitle2,{color:'#7D7D7D'}]}>{'Address ' + (index + 1)}</Text>
+                                    <Text style={{...FONTS.fontMedium,fontSize:16,color:colors.title,marginTop:5}}>{address.address + ', ' + address.city + ', ' + address.state + ', ' + address.pincode}</Text>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+
+            </ScrollView>
+                <View style={[GlobalStyleSheet.container, { flexDirection: 'row', justifyContent: 'space-evenly' }]}>
+                    <Button
+                        title='Add Address'
+                        color={COLORS.white}
+                        text={COLORS.primary}
+                        size='lg'
+                        style={{flex: 1, border: '1px solid', borderColor: COLORS.light, borderRadius: 8}}
+                        onPress={addAddress} />
+                            
+                    <Button
+                        title='Delete Address'
+                        color={COLORS.danger}
+                        text={COLORS.white}
+                        size='lg'
+                        style={{flex: 1, border: '1px solid', borderColor: COLORS.light, borderRadius: 8}}
+                        onPress={() => setModalVisible(true)} />
+                </View>
+
+                <Snackbar
+                    visible={snackbarVisible}
+                    onDismiss={onDismissSnackBar}
+                    action={{
+                    	label: 'OK',
+                    	onPress: () => {}
+                    }}
+                    >
+                    {snackText}
+			    </Snackbar>
             </View>
-        </View>
+        </>
     )
 }
 

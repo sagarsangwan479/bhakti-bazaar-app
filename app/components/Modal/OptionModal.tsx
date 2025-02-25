@@ -7,9 +7,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
     close : any;
+    isConfirmed: any;
+    title: string;
+    confirmationText: string;
 }
 
-const OptionModal = ({close} : Props) => {
+const OptionModal = ({close, isConfirmed, title, confirmationText} : Props) => {
 
     const theme = useTheme();
     const { colors } : {colors : any} = theme;
@@ -28,8 +31,8 @@ const OptionModal = ({close} : Props) => {
                 maxWidth:340,
             }}>
                 <Ionicons name='information-circle-sharp' style={{marginBottom:8}} color={colors.title} size={60}/>
-                <Text style={{...FONTS.h5,color:colors.title,marginBottom:5}}>Are You Confirm?</Text>
-                <Text style={{...FONTS.font,color:colors.text,textAlign:'center'}}>You want to cancel the order of T-shirt.</Text>
+                <Text style={{...FONTS.h5,color:colors.title,marginBottom:5}}>{title}</Text>
+                <Text style={{...FONTS.font,color:colors.text,textAlign:'center'}}>{confirmationText}</Text>
                 <View style={{flexDirection:'row',marginTop:25}}>
                     <Button 
                         onPress={() => close(false)}
@@ -37,7 +40,7 @@ const OptionModal = ({close} : Props) => {
                         style={{marginRight:10}}
                         title="Cancel"/>
                     <Button 
-                        onPress={() => close(false)}
+                        onPress={() => isConfirmed(true)}
                         title="Confirm"
                         color={COLORS.primary}
                         />
